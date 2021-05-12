@@ -22,7 +22,7 @@ sudo iptables \
   -t nat \
   -p tcp \
   -d 192.168.50.2 \
-  --dport 27017 \
+  --dport 8080 \
   -j DNAT \
   --to-destination 192.168.50.11:80
 ```
@@ -38,6 +38,17 @@ sudo iptables \
   -A FORWARD \
   -p tcp \
   -d 192.168.50.11 \
+  --dport 80 \
+  -m state \
+  --state NEW,ESTABLISHED,RELATED \
+  -j ACCEPT
+```
+
+```sh
+sudo iptables \
+  -A FORWARD \
+  -p tcp \
+  -d 192.168.50.12 \
   --dport 80 \
   -m state \
   --state NEW,ESTABLISHED,RELATED \
@@ -65,14 +76,33 @@ curl -XGET 192.168.50.2:8080 -I
 
 ## 7. Route requests to multiple application nodes
 
+Prerequisites: delete all existing PREROUTING rules
+
+```sh
+iptables -L -v -n -t nat
+
+iptables -D PREROUTING 1 -t nat
+```
+
 ### Round robin
 
 ```sh
 iptables -A PREROUTING -t nat -p tcp -d 192.168.50.2 --dport 8080 \
          -m statistic --mode nth --every 2 --packet 0              \
-         -j DNAT --to-destination 192.168.50.11:80
-iptables -A PREROUTING -t nat -p tcp -d 192.168.50.2 --dport 8080 \
          -j DNAT --to-destination 192.168.50.12:80
+iptables -A PREROUTING -t nat -p tcp -d 192.168.50.2 --dport 8080 \
+         -j DNAT --to-destination 192.168.50.11:80
 ```
 
+SNAT for node-2
+```sh
+sudo iptables \
+  -A POSTROUTING \
+  -t nat \
+  -p tcp \
+  -d 192.168.50.12 \
+  --dport 80 \
+  -j SNAT \
+  --to-source 192.168.50.2
+```
 
