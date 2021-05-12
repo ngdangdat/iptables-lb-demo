@@ -46,21 +46,6 @@ sudo iptables \
 
 ## 5. SNAT
 
-node-1
-
-```sh
-sudo iptables \
-  -A POSTROUTING \
-  -t nat \
-  -p tcp \
-  -d 192.168.50.11 \
-  --dport 80 \
-  -j SNAT \
-  --to-source 192.168.50.2
-```
-
-node-2
-
 ```sh
 sudo iptables \
   -A POSTROUTING \
