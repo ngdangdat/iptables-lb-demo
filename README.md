@@ -30,7 +30,7 @@ sudo iptables \
 ## 4. Allow FORWARD for TCP requests
 Enable kernet's ip_forward flag
 ```sh
-sed -i 's/\#net.ipv4.ip_forward/net.ipv4.ip_forward/' /etc/sysctl.d/99-sysctl.conf
+sudo sed -i 's/\#net.ipv4.ip_forward/net.ipv4.ip_forward/' /etc/sysctl.d/99-sysctl.conf
 ```
 
 ```sh
