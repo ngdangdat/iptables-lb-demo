@@ -79,18 +79,18 @@ curl -XGET 192.168.50.2:8080 -I
 Prerequisites: delete all existing PREROUTING rules
 
 ```sh
-iptables -L -v -n -t nat
+sudo iptables -L -v -n -t nat
 
-iptables -D PREROUTING 1 -t nat
+sudo iptables -D PREROUTING 1 -t nat
 ```
 
 ### Round robin
 
 ```sh
-iptables -A PREROUTING -t nat -p tcp -d 192.168.50.2 --dport 8080 \
+sudo iptables -A PREROUTING -t nat -p tcp -d 192.168.50.2 --dport 8080 \
          -m statistic --mode nth --every 2 --packet 0              \
          -j DNAT --to-destination 192.168.50.12:80
-iptables -A PREROUTING -t nat -p tcp -d 192.168.50.2 --dport 8080 \
+sudo iptables -A PREROUTING -t nat -p tcp -d 192.168.50.2 --dport 8080 \
          -j DNAT --to-destination 192.168.50.11:80
 ```
 
